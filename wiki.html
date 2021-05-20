@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>WikiMaxWeb</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/wiki.css">
+    <script src="scripts/fetch.js"></script>
+</head>
+
+<body>
+
+    <form class="header-container" action="/w/" method="get">
+        <header>
+            <nav>
+                <label>
+                    <span class="button-icon" title="Open main menu">≡</span>
+                    <input type="checkbox" class="toggle" onclick="document.querySelector('#nav-menu').classList.toggle('hide');">
+                </label>
+                <div id="nav-menu" class="hide">
+                    <ul>
+                        <li>
+                            <a href="/wiki/Main_Page"><span>Home</span></a>
+                        </li>
+                        <li>
+                            <a href="/wiki/Special:RecentChanges"><span>Recent changes</span></a>
+                        </li>
+                        <li>
+                            <a href="/wiki/Special:SpecialPages"><span>Special pages</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="wiki-name">
+                <a href="/wiki/Main_Page"><span id="wiki-name">Wiki</span></a>
+            </div>
+            <div class="search-box">
+                <input type="hidden" name="title" value="Special:Search">
+                <input class="search" type="search" name="search" autocomplete="off" placeholder="Search">
+            </div>
+        </header>
+    </form>
+
+    <main>
+        <h1 id="page-heading"></h1>
+        <div id="content">Loading...</div>
+    </main>
+
+    <footer>
+
+    </footer>
+
+</body>
+
+</html>

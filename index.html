@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>WikiMax Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/wiki.css">
+    <link rel="stylesheet" href="styles/index.css">
+    <script>
+        const $ = sel => document.querySelector(sel);
+        function updateInput() {
+            $('#wiki-domain').value = $('#wiki-input').value + '.fandom.com';
+        }
+    </script>
+</head>
+
+<body>
+    <main style="font-size: 120%;">
+        <h1>WikiMax Home</h1>
+        <p>Consolodate your wiki browsing experience</p>
+
+        <h2>Select Wiki</h2>
+        <div class="cards">
+            <a class="card" href="?wiki=en.wikipedia">
+                <strong>Wikipedia</strong>
+            </a>
+            <form class="card" action="wiki.html" method="get">
+                <strong>Fandom</strong>
+                <input readonly name="wiki" id="wiki-domain" style="display: none;">
+                <input type="text" id="wiki-input" onchange="updateInput();">
+                <input type="submit" style="display: none;">
+            </form>
+        </div>
+    </main>
+</body>
+
+</html>

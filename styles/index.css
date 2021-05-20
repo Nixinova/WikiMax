@@ -1,0 +1,5 @@
+h1, h2 {border: none;}
+
+.cards {display: flex;}
+.card {display: flex; flex-direction: column; justify-content: center; place-items: center; width: 200px; height: 200px; background: #444; color: white; border-radius: 1em;}
+input {width: 120px; height: 30px;}
