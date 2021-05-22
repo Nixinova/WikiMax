@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <title>WikiMaxWeb</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles/wiki.css">
-    <script src="scripts/fetch.js"></script>
+    <link rel="stylesheet" href="/styles/wiki.css">
+    <script src="/scripts/fetch.js"></script>
 </head>
 
 <body>
 
-    <form class="header-container" action="/w/" method="get">
+    <div class="header-container">
         <header>
             <nav>
                 <label>
@@ -21,26 +21,26 @@
                 <div id="nav-menu" class="hide">
                     <ul>
                         <li>
-                            <a href="/wiki/Main_Page"><span>Home</span></a>
+                            <a href="javascript:loadPage('Main_Page');"><span>Home</span></a>
                         </li>
                         <li>
-                            <a href="/wiki/Special:RecentChanges"><span>Recent changes</span></a>
+                            <a href="javascript:loadPage('Special:RecentChanges)"><span>Recent changes</span></a>
                         </li>
                         <li>
-                            <a href="/wiki/Special:SpecialPages"><span>Special pages</span></a>
+                            <a href="javascript:loadPage('Special:SpecialPages)"><span>Special pages</span></a>
                         </li>
                     </ul>
                 </div>
             </nav>
             <div class="wiki-name">
-                <a href="/wiki/Main_Page"><span id="wiki-name">Wiki</span></a>
+                <a href="javascript:loadPage('Main_Page)"><span id="wiki-name">Wiki</span></a>
             </div>
-            <div class="search-box">
-                <input type="hidden" name="title" value="Special:Search">
-                <input class="search" type="search" name="search" autocomplete="off" placeholder="Search">
-            </div>
+            <form class="search-box" action="javascript:sendSearch();" method="get">
+                <input class="search" type="search" id="search-value" autocomplete="off" placeholder="Search">
+                <input type="submit" style="display:none;">
+            </form>
         </header>
-    </form>
+    </div>
 
     <main>
         <h1 id="page-heading"></h1>

@@ -7,12 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles/wiki.css">
     <link rel="stylesheet" href="styles/index.css">
-    <script>
-        const $ = sel => document.querySelector(sel);
-        function updateInput() {
-            $('#wiki-domain').value = $('#wiki-input').value + '.fandom.com';
-        }
-    </script>
 </head>
 
 <body>
@@ -22,15 +16,14 @@
 
         <h2>Select Wiki</h2>
         <div class="cards">
-            <a class="card" href="?wiki=en.wikipedia">
+            <a class="card" href="/mw/wikipedia">
                 <strong>Wikipedia</strong>
             </a>
-            <form class="card" action="wiki.html" method="get">
+            <a class="card">
                 <strong>Fandom</strong>
-                <input readonly name="wiki" id="wiki-domain" style="display: none;">
-                <input type="text" id="wiki-input" onchange="updateInput();">
-                <input type="submit" style="display: none;">
-            </form>
+                <input type="text" id="wiki-input">
+                <input type="submit" onclick="location.pathname='/fd/' + document.querySelector('wiki-input').value;">
+            </a>
         </div>
     </main>
 </body>

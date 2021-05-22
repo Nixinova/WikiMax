@@ -1,0 +1,2 @@
+/wp/:lang/*         /wiki?wiki=:lang.wikipedia.org 200
+/fd/:wiki/*         /wiki?wiki=:wiki.fandom.com 200

@@ -64,6 +64,8 @@ a.redlink:visited {color: #b44;}
 .hlist li {margin: 0; display: inline;}
 .hlist li:not(:first-child)::before {content: '•'; margin: 0 6px;}
 
+.fd img, .fd .chevron-wrapper, .fd .section-edit-link {display: none;}
+
 /* Misc */
 
 .hide {display: none;}
