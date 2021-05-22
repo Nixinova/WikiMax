@@ -47,6 +47,7 @@ a:not(:hover) {text-decoration: none;}
 a.internal-link {color: #04a;}
 a.internal-link:visited {color: #26d;}
 a.external-link {color: #36b;}
+a.external text::after {content: '→';}
 a.external-link:visited {color: #58d;}
 a.external-link::after {content: '\1f855';}
 a.redlink {color: #d33;}
@@ -64,7 +65,9 @@ a.redlink:visited {color: #b44;}
 .hlist li {margin: 0; display: inline;}
 .hlist li:not(:first-child)::before {content: '•'; margin: 0 6px;}
 
-.fd img, .fd .chevron-wrapper, .fd .section-edit-link {display: none;}
+.fd .chevron-wrapper, .fd .section-edit-link {display: none;}
+
+.mw-collapsible.mw-collapsed {display: none;}
 
 /* Misc */
 

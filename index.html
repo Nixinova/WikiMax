@@ -16,14 +16,14 @@
 
         <h2>Select Wiki</h2>
         <div class="cards">
-            <a class="card" href="/mw/wikipedia">
+            <a class="card" href="/wp/en">
                 <strong>Wikipedia</strong>
             </a>
-            <a class="card">
+            <form class="card" action="javascript:location.pathname='/fd/' + document.querySelector('#wiki-input').value;">
                 <strong>Fandom</strong>
                 <input type="text" id="wiki-input">
-                <input type="submit" onclick="location.pathname='/fd/' + document.querySelector('wiki-input').value;">
-            </a>
+                <input type="submit">
+            </form>
         </div>
     </main>
 </body>
