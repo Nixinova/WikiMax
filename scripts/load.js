@@ -1,17 +1,20 @@
 async function loadPage(page) {
 	if (page) window.page = page;
 	changeUrl('page', window.page);
+	let pageTitle = decodeURIComponent(window.page.replace(/_/g, ' '));
 	$('#content').innerHTML = await getPageContent({ mode: 'view' });
 	$('#wiki-name').innerText = getWikiName(window.wiki);
-	$('#page-heading').innerText = window.page.replace(/_/g, ' ');
-	$('title').innerHTML = `${window.page.replace(/_/g, ' ')} &ndash; ${getWikiName(window.wiki)} via WikiMax`;
+	$('#page-heading').innerText = pageTitle;
+	$('title').innerHTML = `${pageTitle} &ndash; ${getWikiName(window.wiki)} via WikiMax`;
 
+	// Replace links
 	document.body.innerHTML = document.body.innerHTML.replace(/href="\/wiki\/(.+?)"/g, (_, page) => {
 		return `href="javascript:loadPage('${encodeURIComponent(page.replace(/\?.+$/, ''))}');"`;
 	});
 
-	$$('h1:not(#page-heading),h2,h3,h4,h5,h6').forEach((elem, i) => {
-		let heading = elem.id || elem.querySelector('.mw-headline')?.innerText || elem.innerText.replace('[edit]', '');
+	// Heading edit links
+	$$('#page-heading, .mw-parser-output > :is(h1:not(#page-heading),h2,h3,h4,h5,h6)').forEach((elem, i) => {
+		let heading = elem.querySelector('.mw-headline')?.innerText || elem.id || elem.innerText.replace('[edit]', '');
 		elem.id = '';
 		elem.innerHTML = `
 			<span class="mw-headline" id="${heading.replace(/ /g, '_')}">${heading}</span>
