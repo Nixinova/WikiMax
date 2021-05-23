@@ -61,9 +61,10 @@ a.redlink:visited {color: #b44;}
 .navbox-group {background-color: #ddf; white-space: nowrap;}
 .navbox-title, .navbox th {background-color: #ccf; border-color: #ccf;}
 
-.hlist ul {margin: 0;}
-.hlist li {margin: 0; display: inline;}
-.hlist li:not(:first-child)::before {content: '•'; margin: 0 6px;}
+.hlist :is(ul, li) {margin: 0; display: inline;}
+.hlist li ul::before {content: ' (';}
+.hlist li ul::after {content: ') ';}
+.hlist li:not(:first-child)::before {content: '•'; margin: 0 2px 0 0;}
 
 .fd .chevron-wrapper, .fd .section-edit-link {display: none;}
 

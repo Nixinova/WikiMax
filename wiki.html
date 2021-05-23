@@ -6,7 +6,11 @@
     <title>WikiMaxWeb</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles/wiki.css">
+    <script src="/scripts/common.js"></script>
+    <script src="/scripts/events.js"></script>
     <script src="/scripts/fetch.js"></script>
+    <script src="/scripts/load.js"></script>
+    <script src="/scripts/login.js"></script>
 </head>
 
 <body>
@@ -43,6 +47,15 @@
     </div>
 
     <main>
+        <form id="login" class="hide">
+            <input type="hidden" name="action" value="clientlogin">
+            <input type="hidden" name="loginreturnurl">
+            <input type="hidden" name="logintoken">
+            <input type="text" name="username" autocomplete="username">
+            <input type="password" name="password" autocomplete="current-password">
+            <input type="submit">
+        </form>
+
         <h1 id="page-heading"></h1>
         <div id="content">Loading...</div>
     </main>
