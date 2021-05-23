@@ -58,7 +58,7 @@ async function getPageContent({ page = window.page, mode = 'view' }) {
 	try {
 		if (data.error) throw data.error;
 		let content = data.parse?.[prop]['*'];
-		if (window.host === 'fd') content = content?.replace(/src=".+?static.wikia.+?"/g, 'rel="noreferrer" $&');
+		if (window.host === 'fd') content = content?.replace(/src="(.+?static.wikia.+?)[?&]cb=\d+"/g, 'rel="noreferrer" src="$1"');
 		return content;
 	} catch (e) {
 		return e;
