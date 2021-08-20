@@ -25,19 +25,21 @@
                 <div id="nav-menu" class="hide">
                     <ul>
                         <li>
-                            <a href="javascript:loadPage('Main_Page');"><span>Home</span></a>
+                            <a data-root-rel href="Main_Page"><span>Home</span></a>
                         </li>
                         <li>
-                            <a href="javascript:loadPage('Special:RecentChanges)"><span>Recent changes</span></a>
+                            <a data-root-rel href="Special:RecentChanges"><span>Recent changes</span></a>
                         </li>
                         <li>
-                            <a href="javascript:loadPage('Special:SpecialPages)"><span>Special pages</span></a>
+                            <a data-root-rel href="Special:SpecialPages"><span>Special pages</span></a>
                         </li>
                     </ul>
                 </div>
             </nav>
             <div class="wiki-name">
-                <a href="javascript:loadPage('Main_Page)"><span id="wiki-name">Wiki</span></a>
+                <a data-root-rel href="Main_Page">
+                    <span id="wiki-name">Wiki</span>
+                </a>
             </div>
             <form class="search-box" action="javascript:sendSearch();" method="get">
                 <input class="search" type="search" id="search-value" autocomplete="off" placeholder="Search">

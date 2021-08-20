@@ -1,10 +1,11 @@
-import { changeUrl, getWikiName, getBaseUrl } from './common.js';
+import { changeUrl, pageLink, getWikiName, getBaseUrl, getCurrentBaseUrl } from './common.js';
 import { getPageContent } from './fetch.js';
 
 /**
  * Load a given page
  * @param {string} page Page name to load
  * @returns {Promise<void>}
+ * @usedin HTML
  */
 export default async function loadPage(page) {
 	if (page) window.page = page;
@@ -16,16 +17,15 @@ export default async function loadPage(page) {
 	$('title').innerHTML = `${pageTitle} &ndash; ${getWikiName(window.wiki)} via WikiMax`;
 
 	// Replace links
-	document.body.innerHTML = document.body.innerHTML.replace(/href="\/wiki\/(.+?)"/g, (_, page) => {
-		return `href="javascript:loadPage('${encodeURIComponent(page.replace(/\?.+$/, ''))}');"`;
-	});
+	document.body.innerHTML = document.body.innerHTML.replace(/href="\/wiki\/(.+?)"/g, (_, page) => `href="${pageLink(page)}"`);
+	$$('[data-root-rel]').forEach(elem => elem.href = getCurrentBaseUrl() + elem.href.split('/').pop())
 
 	// Heading edit links
 	$$('.mw-parser-output > :is(h1:not(#page-heading),h2,h3,h4,h5,h6)').forEach((elem, i) => {
 		let heading = elem.querySelector('.mw-headline')?.innerText || elem.id || elem.innerText.replace('[edit]', '');
 		elem.id = '';
 		elem.innerHTML = `
-			<span class="mw-headline" id="${heading.replace(/ /g, '_')}">${heading}</span>
+			<span class="mw-headline" id="${encodeURIComponent(heading.replace(/ /g, '_')).replace(/%/g, '.')}">${heading}</span>
 			<span class="mw-editsection">
 				<span class="mw-editsection-bracket">[</span>
 				<a href="${getBaseUrl()}index.php?title=${window.page}&action=edit&section=${i}&mobileaction=toggle_view_desktop" title="Edit section: ${heading}" target="_blank">edit</a>

@@ -1,4 +1,4 @@
-import { reqOpts, changeUrl, getBaseUrl, getApiUrl } from './common.js';
+import { reqOpts, changeUrl, pageLink, getBaseUrl, getApiUrl } from './common.js';
 
 /**
  * Fetch wiki assets
@@ -58,7 +58,7 @@ export async function sendSearch() {
 	let content = '';
 	for (const i in titles) {
 		let page = urls[i].split('/').slice(-1)[0];
-		content += `<li><strong><a href="javascript:loadPage('${page}');">${titles[i]}</a></strong></li>`
+		content += `<li><strong><a href="${pageLink(page)}">${titles[i]}</a></strong></li>`
 	}
 	$('#content').innerHTML = `<ul>${content}</ul>`;
 }
@@ -70,6 +70,9 @@ window.sendSearch = sendSearch;
  * @returns {Promise<string>}
  */
 export async function getPageContent({ page = window.page, mode = 'view' }) {
+	if (page.toLowerCase().startsWith('special:')) {
+		return await getSpecialPageContent(page);
+	}
 	const prop = { view: 'text', edit: 'wikitext' }[mode];
 	const apiUrl = `${getApiUrl()}action=parse&page=${page}&format=json&prop=${prop}`;
 	const data = await fetch(apiUrl, reqOpts).then(data => data.json()).catch(e => console.error(e, mode, page));
@@ -79,4 +82,44 @@ export async function getPageContent({ page = window.page, mode = 'view' }) {
 		content = content?.replace(/src=".+?static.wikia.+?"/g, 'src');
 	}
 	return content;
+}
+
+/**
+ * Fetch special page content
+ * @param {string} page Page title
+ * @returns {Promise<string>}
+ */
+async function getSpecialPageContent(page = window.page) {
+	const pageName = page.toLowerCase().replace('special:', '');
+	let apiUrl = `${getApiUrl()}action=query&format=json&`;
+	apiUrl += {
+		recentchanges: 'list=recentchanges&rcprop=title|ids|sizes|flags|user|loginfo|comment&rclimit=50',
+	}[pageName];
+	const data = await fetch(apiUrl, reqOpts).then(data => data.json()).catch(e => console.error(e, page));
+	const queryResults = data.query[pageName];
+	const table = document.createElement('table');
+	table.style.maxWidth = '100%';
+	for (const entry of queryResults) {
+		const { type, title, comment, pageid, revid, old_revid: oldid, user, oldlen, newlen } = entry;
+		if (type !== 'edit') continue;
+		const editDiff = newlen - oldlen;
+		const editDiffType = editDiff > 0 ? '+' : editDiff < 0 ? '-' : '';
+		const commentContent = comment
+			.replace(/\[\[([^\]]+?)(?:\|([^\]]+))?\]\]/g, (_, page, display) => `<a href="${pageLink(page)}">${display || page}</a>`)
+			.replace(/\/\*(.+?)\*\//, (_, section) => `<a href="${pageLink(title, { '#': section })}">${section.trim()}</a>:`)
+		const styles = {
+			editDiff: `color: ${{ '+': 'green', '-': 'red', '': 'gray' }[editDiffType]}`,
+		};
+
+		const tr = document.createElement('tr');
+		tr.innerHTML = `
+			<td><strong><a href="${pageLink(title)}">${title}</strong></td>
+			<td><a href="${getBaseUrl()}Special:Diff/${revid}" target="_blank">(diff)</a></td>
+			<td style="${styles.editDiff}">${(editDiffType.replace('-', '&minus;')) + Math.abs(editDiff)}</td>
+			<td><a href="${pageLink('User:' + user)}">${user}</a></td>
+			<td style="max-width:400px;"><em>${commentContent}</em></td>
+		`
+		table.appendChild(tr);
+	}
+	return table.outerHTML;
 }
