@@ -1,15 +1,17 @@
-const $ = document.querySelector.bind(document);
-const $$ = document.querySelectorAll.bind(document);
-
-const reqOpts = {
+export const reqOpts = {
     method: 'GET',
     headers: {
         'User-Agent': 'WikiMaxWeb/DEV (https://github.com/Nixinova/WikiMaxWeb)',
     },
 };
 
-function changeUrl(type, path) {
-    let newPath = (() => {
+/**
+ * Change to a new URL
+ * @param {'all' | 'page'} type 
+ * @param {string} path 
+ */
+ export function changeUrl(type, path) {
+    const newPath = (() => {
         switch (type) {
             case 'all': return path;
             case 'page': return location.pathname.replace(/(\/[^/]+\/[^/]+)\/?.*$/, '$1/' + path);
@@ -18,15 +20,24 @@ function changeUrl(type, path) {
     history.pushState({}, '', newPath);
 }
 
-function getWikiName() {
+/**
+ * @returns {string} Human-readable name of the wiki
+ */
+ export function getWikiName() {
     let wikiname = window.wiki.split('.')[window.wiki.includes('.fandom.') ? 0 : 1];
     return wikiname[0].toUpperCase() + wikiname.slice(1);
 }
 
-function getBaseUrl() {
+/**
+ * @returns {string} Base wiki URL
+ */
+ export function getBaseUrl() {
     return `https://${window.wiki}${window.wiki.includes('.fandom.') ? '' : '/w'}/`;
 }
 
-function getApiUrl() {
+/**
+ * @returns {string} API URL
+ */
+export function getApiUrl() {
     return `${getBaseUrl()}api.php?origin=*&`;
 }

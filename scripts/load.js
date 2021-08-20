@@ -1,7 +1,15 @@
-async function loadPage(page) {
+import { changeUrl, getWikiName, getBaseUrl } from './common.js';
+import { getPageContent } from './fetch.js';
+
+/**
+ * Load a given page
+ * @param {string} page Page name to load
+ * @returns {Promise<void>}
+ */
+export default async function loadPage(page) {
 	if (page) window.page = page;
 	changeUrl('page', window.page);
-	let pageTitle = decodeURIComponent(window.page.replace(/_/g, ' '));
+	const pageTitle = decodeURIComponent(window.page.replace(/_/g, ' '));
 	$('#content').innerHTML = await getPageContent({ mode: 'view' });
 	$('#wiki-name').innerText = getWikiName(window.wiki);
 	$('#page-heading').innerText = pageTitle;
@@ -13,7 +21,7 @@ async function loadPage(page) {
 	});
 
 	// Heading edit links
-	$$('#page-heading, .mw-parser-output > :is(h1:not(#page-heading),h2,h3,h4,h5,h6)').forEach((elem, i) => {
+	$$('.mw-parser-output > :is(h1:not(#page-heading),h2,h3,h4,h5,h6)').forEach((elem, i) => {
 		let heading = elem.querySelector('.mw-headline')?.innerText || elem.id || elem.innerText.replace('[edit]', '');
 		elem.id = '';
 		elem.innerHTML = `
@@ -30,3 +38,4 @@ async function loadPage(page) {
 		loadPage();
 	}
 }
+window.loadPage = loadPage;

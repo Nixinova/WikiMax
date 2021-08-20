@@ -1,4 +1,10 @@
-async function fetchAssets() {
+import { reqOpts, changeUrl, getBaseUrl, getApiUrl } from './common.js';
+
+/**
+ * Fetch wiki assets
+ * @returns {Promise<void>}
+ */
+export async function fetchAssets() {
 	const gadgets = await getPageContent({ page: 'MediaWiki:Gadgets-definition', mode: 'edit' });
 	let styles = [], scripts = [];
 	gadgets.split('\n').forEach(line => {
@@ -10,21 +16,26 @@ async function fetchAssets() {
 	fetchWikiScripts(scripts).catch(a => a);
 }
 
+/**
+ * Fetch wiki styling files
+ * @param {string[]} modules Style modules to fetch
+ */
 async function fetchWikiStyles(modules = []) {
 	modules.push(...'site.styles|site|mediawiki.action.view.metadata|mediawiki.page.startup|mediawiki.page.ready|mediawiki.searchSuggest|mediawiki.page.watch.ajax'.split('|'));
-	if (window.host === 'wp') modules.push(...'ext.echo.styles.badge|ext.uls.interlanguage|ext.visualEditor.desktopArticleTarget.noscript|ext.wikimediaBadges|jquery.makeCollapsible.styles|oojs-ui.styles.icons-alerts|skins.vector.styles.legacy'.split('|'));
-	else if (window.host === 'fd') modules.push(...'|ext.cheevos.notifications.styles|ext.fandom.ArticleInterlang.css|ext.fandom.CreatePage.css|ext.fandom.DesignSystem.css|ext.fandom.UserPreferencesV2.css|ext.fandom.bannerNotifications.css|ext.hydraCore.font-awesome.styles|ext.reverb.notifications.styles|ext.social.styles|ext.staffSig.css|ext.visualEditor.desktopArticleTarget.noscript|mediawiki.action.view.filepage|mediawiki.legacy.commonPrint,shared|mediawiki.skinning.interface|skin.hydra.css|skins.hydra.advertisements.styles|skins.hydra.footer,netbar,oasisOverrides,theme|skins.hydra.googlefont.styles|skins.vector.styles|skins.vector.styles.responsive|skins.z.hydra.light.styles'.split('|'));
 	const data = await fetch(`${getBaseUrl()}load.php?modules=${modules.join('|')}&only=styles&skin=minerva&*`, reqOpts).then(data => data.text());
 	$('head').innerHTML += `<style>${data}<style>`;
 }
 
+/**
+ * Fetch wiki script files
+ * @param {string[]} modules Script modules to fetch
+ */
 async function fetchWikiScripts(modules = []) {
 	let moduleSegments = [];
 	modules.push('startup');
 	for (let i = 0; i < modules.length; i += 10) {
-		moduleSegments.push(modules.slice(i, i+10));
+		moduleSegments.push(modules.slice(i, i + 10));
 	}
-	console.log(moduleSegments)
 	let data = '';
 	for (const modules of moduleSegments) {
 		data += await fetch(`${getBaseUrl()}load.php?modules=${modules.join('|')}&only=scripts&skin=minerva&*`, reqOpts).then(data => data.text());
@@ -32,7 +43,12 @@ async function fetchWikiScripts(modules = []) {
 	$('head').innerHTML += `<script>${data}<script>`;
 }
 
-async function sendSearch() {
+/**
+ * Fetch search content
+ * @returns {Promise<void>}
+ * @usedin HTML
+ */
+export async function sendSearch() {
 	let search = $('#search-value').value;
 	const apiUrl = `${getApiUrl()}action=opensearch&search=${search}&limit=10&format=json`;
 	const data = await fetch(apiUrl, reqOpts).then(data => data.json());
@@ -46,21 +62,21 @@ async function sendSearch() {
 	}
 	$('#content').innerHTML = `<ul>${content}</ul>`;
 }
+window.sendSearch = sendSearch;
 
-async function getPageContent({ page = window.page, mode = 'view' }) {
-	let prop;
-	let apiUrl = getApiUrl();
-	switch (mode) {
-		case 'view': prop = 'text'; apiUrl += `action=parse&page=${page}&format=json&prop=${prop}`; break;
-		case 'edit': prop = 'wikitext'; apiUrl += `action=parse&page=${page}&format=json&prop=${prop}`; break;
+/**
+ * Fetch regular page content
+ * @param {{page: string, mode: 'view' | 'edit'}} opts Options
+ * @returns {Promise<string>}
+ */
+export async function getPageContent({ page = window.page, mode = 'view' }) {
+	const prop = { view: 'text', edit: 'wikitext' }[mode];
+	const apiUrl = `${getApiUrl()}action=parse&page=${page}&format=json&prop=${prop}`;
+	const data = await fetch(apiUrl, reqOpts).then(data => data.json()).catch(e => console.error(e, mode, page));
+	let content = data.parse?.[prop]['*'];
+	if (window.host === 'fd') {
+		// Images from Fandom do not load
+		content = content?.replace(/src=".+?static.wikia.+?"/g, 'src');
 	}
-	const data = await fetch(apiUrl, reqOpts).then(data => data.json()).catch(e => console.log(mode, page));
-	try {
-		if (data.error) throw data.error;
-		let content = data.parse?.[prop]['*'];
-		if (window.host === 'fd') content = content?.replace(/src=".+?static.wikia.+?"/g, 'src');
-		return content;
-	} catch (e) {
-		return e;
-	}
+	return content;
 }

@@ -1,3 +1,7 @@
+import { changeUrl } from './common.js';
+import { fetchAssets } from './fetch.js';
+import loadPage from './load.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     let [, host, wiki, ...page] = location.pathname.split('/');
     page = page.join('/');
@@ -8,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (host === 'fd') {
         window.wiki = (wiki || 'community') + '.fandom.com';
     }
-    else /*if (host === 'wp')*/ {
+    else if (host === 'wp') {
         window.wiki = (wiki || 'en') + '.wikipedia.org';
     }
     fetchAssets();
