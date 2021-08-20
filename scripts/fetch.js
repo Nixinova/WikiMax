@@ -93,33 +93,55 @@ async function getSpecialPageContent(page = window.page) {
 	const pageName = page.toLowerCase().replace('special:', '');
 	let apiUrl = `${getApiUrl()}action=query&format=json&`;
 	apiUrl += {
-		recentchanges: 'list=recentchanges&rcprop=title|ids|sizes|flags|user|loginfo|comment&rclimit=50',
+		recentchanges: 'list=recentchanges&rcprop=title|ids|sizes|flags|user|loginfo|comment|tags&rclimit=50',
 	}[pageName];
 	const data = await fetch(apiUrl, reqOpts).then(data => data.json()).catch(e => console.error(e, page));
 	const queryResults = data.query[pageName];
 	const table = document.createElement('table');
 	table.style.maxWidth = '100%';
 	for (const entry of queryResults) {
-		const { type, title, comment, pageid, revid, old_revid: oldid, user, oldlen, newlen } = entry;
-		if (type !== 'edit') continue;
+		const { type, title, comment, revid, user, oldlen, newlen, tags } = entry;
 		const editDiff = newlen - oldlen;
 		const editDiffType = editDiff > 0 ? '+' : editDiff < 0 ? '-' : '';
 		const commentContent = comment
 			.replace(/\[\[([^\]]+?)(?:\|([^\]]+))?\]\]/g, (_, page, display) => `<a href="${pageLink(page)}">${display || page}</a>`)
 			.replace(/\/\*(.+?)\*\//, (_, section) => `<a href="${pageLink(title, { '#': section })}">${section.trim()}</a>:`)
 		const styles = {
+			title: `width: 250px; word-break: break-word;`,
 			editDiff: `color: ${{ '+': 'green', '-': 'red', '': 'gray' }[editDiffType]}`,
 		};
 
 		const tr = document.createElement('tr');
+		tr.dataset.type = type;
+		if (type === 'log' || type === 'categorize') tr.classList.add('hide');
 		tr.innerHTML = `
-			<td><strong><a href="${pageLink(title)}">${title}</strong></td>
+			<td>${type[0].toUpperCase()}</td>
+			<td style="${styles.title}"><strong><a href="${pageLink(title)}">${title}</strong></td>
 			<td><a href="${getBaseUrl()}Special:Diff/${revid}" target="_blank">(diff)</a></td>
 			<td style="${styles.editDiff}">${(editDiffType.replace('-', '&minus;')) + Math.abs(editDiff)}</td>
 			<td><a href="${pageLink('User:' + user)}">${user}</a></td>
-			<td style="max-width:400px;"><em>${commentContent}</em></td>
+			<td style="max-width:400px;"><em>(${commentContent || '-'})</em></td>
+			<td><small>${tags.length ? `(${tags.join(' | ')})` : ''}</small></td>
 		`
 		table.appendChild(tr);
 	}
-	return table.outerHTML;
+	const styles = `<style>
+		tr {outline: 1px solid gray;}
+		td {display: inline-block; padding: 4px;}
+		#rc-toggles button {border: 1px solid gray;}
+		.shown {background: #5f5;} .shown::after {content: 'Shown';}
+		.hidden {background: #f55;} .hidden::after {content: 'Hidden';}
+	</style>`
+	window.toggleRCItem = (elem, type) => {
+		$$(`[data-type='${type}']`).forEach(elem => elem.classList.toggle('hide'));
+		elem.classList.toggle('hidden');
+		elem.classList.toggle('shown');
+	};
+	const toggles = `<div id="rc-toggles">
+		Edits: <button class="shown" onclick="toggleRCItem(this, 'edit')"></button>
+		Creations: <button class="shown" onclick="toggleRCItem(this, 'new')"></button>
+		Categories: <button class="hidden" onclick="toggleRCItem(this, 'categorize')"></button>
+		Logs: <button class="hidden" onclick="toggleRCItem(this, 'log')"></button>
+	</div>`;
+	return styles + toggles + table.outerHTML;
 }
