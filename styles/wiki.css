@@ -44,6 +44,7 @@ input.toggle {visibility: hidden;}
 :is(.wikitable, .infobox) th {background-color: #eaecf0; text-align: center;}
 
 a:not(:hover) {text-decoration: none;}
+a:visited {color: #84a;}
 a.internal-link {color: #04a;}
 a.internal-link:visited {color: #26d;}
 a.external-link {color: #36b;}
