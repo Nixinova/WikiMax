@@ -20,6 +20,13 @@ export default async function loadPage(page) {
 	document.body.innerHTML = document.body.innerHTML.replace(/href="\/wiki\/(.+?)"/g, (_, page) => `href="${pageLink(page)}"`);
 	$$('[data-root-rel]').forEach(elem => elem.href = getCurrentBaseUrl() + elem.href.split('/').pop())
 
+	// Replace images
+	$$('a').forEach(elem => {
+		const img = elem.querySelector('img');
+		if (!img || !img.src || elem.href.includes('wikimax')) return;
+		img.src = elem.href.replace(/\/revision.+/, '');
+	});
+
 	// Heading edit links
 	$$('.mw-parser-output > :is(h1:not(#page-heading),h2,h3,h4,h5,h6)').forEach((elem, i) => {
 		let heading = elem.querySelector('.mw-headline')?.innerText || elem.id || elem.innerText.replace('[edit]', '');
@@ -28,7 +35,7 @@ export default async function loadPage(page) {
 			<span class="mw-headline" id="${encodeURIComponent(heading.replace(/ /g, '_')).replace(/%/g, '.')}">${heading}</span>
 			<span class="mw-editsection">
 				<span class="mw-editsection-bracket">[</span>
-				<a href="${getBaseUrl()}index.php?title=${window.page}&action=edit&section=${i}&mobileaction=toggle_view_desktop" title="Edit section: ${heading}" target="_blank">edit</a>
+				<a href="${getBaseUrl()}index.php?title=${window.page}&action=edit&section=${i + 1}&mobileaction=toggle_view_desktop" title="Edit section: ${heading}" target="_blank">edit</a>
 				<span class="mw-editsection-bracket">]</span>
 			</span>
 		`;
